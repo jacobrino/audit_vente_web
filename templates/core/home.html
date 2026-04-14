@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h2 class="mb-2">
+                <i class="fa-solid fa-gauge-high"></i> Tableau de bord
+            </h2>
+            
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <div class="mb-2">
+                    <i class="fa-solid fa-box fa-2x text-primary"></i>
+                </div>
+                <h5 class="card-title">Produits</h5>
+                <h2 class="fw-bold">{{ total_produits }}</h2>
+                <a href="{% url 'produit_list' %}" class="btn btn-outline-primary btn-sm">
+                    Voir les produits
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <div class="mb-2">
+                    <i class="fa-solid fa-users fa-2x text-success"></i>
+                </div>
+                <h5 class="card-title">Clients</h5>
+                <h2 class="fw-bold">{{ total_clients }}</h2>
+                <a href="{% url 'client_list' %}" class="btn btn-outline-success btn-sm">
+                    Voir les clients
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body text-center">
+                <div class="mb-2">
+                    <i class="fa-solid fa-cart-shopping fa-2x text-warning"></i>
+                </div>
+                <h5 class="card-title">Ventes</h5>
+                <h2 class="fw-bold">{{ total_ventes }}</h2>
+                <a href="{% url 'vente_list' %}" class="btn btn-outline-warning btn-sm">
+                    Voir les ventes
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mb-3">
+    <i class="fa-solid fa-chart-column"></i> Statistiques des opérations
+</h4>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-4 border-primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Insertions</h6>
+                        <h2 class="fw-bold mb-0">{{ total_insertions }}</h2>
+                    </div>
+                    <i class="fa-solid fa-plus fa-2x text-primary"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-4 border-warning h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Modifications</h6>
+                        <h2 class="fw-bold mb-0">{{ total_modifications }}</h2>
+                    </div>
+                    <i class="fa-solid fa-pen-to-square fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_superuser %}
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-4 border-danger h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Suppressions</h6>
+                        <h2 class="fw-bold mb-0">{{ total_suppressions }}</h2>
+                    </div>
+                    <i class="fa-solid fa-trash fa-2x text-danger"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+
+{% if user.is_superuser %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">
+            <i class="fa-solid fa-clock-rotate-left"></i> Dernières opérations d'audit
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Type</th>
+                        <th>Client</th>
+                        <th>Produit</th>
+                        <th>Ancienne quantité</th>
+                        <th>Nouvelle quantité</th>
+                        <th>Utilisateur</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for audit in derniers_audits %}
+                        <tr>
+                            <td>
+                                {% if audit.type_operation == 'INSERT' %}
+                                    <span class="badge bg-primary">INSERT</span>
+                                {% elif audit.type_operation == 'UPDATE' %}
+                                    <span class="badge bg-warning text-dark">UPDATE</span>
+                                {% elif audit.type_operation == 'DELETE' %}
+                                    <span class="badge bg-danger">DELETE</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ audit.type_operation }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ audit.nom_client }}</td>
+                            <td>{{ audit.design_produit }}</td>
+                            <td>{{ audit.qtesortie_ancien|default:"-" }}</td>
+                            <td>{{ audit.qtesortie_nouv|default:"-" }}</td>
+                            <td>
+                                {% if audit.utilisateur %}
+                                    {{ audit.utilisateur.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ audit.date_mise_a_jour|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucune opération enregistrée.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3 text-end">
+            <a href="{% url 'audit_list' %}" class="btn btn-outline-dark btn-sm">
+                <i class="fa-solid fa-eye"></i> Voir tout l'audit
+            </a>
+        </div>
+    </div>
+</div>                        
+{% endif %}
+
+
+{% endblock %}

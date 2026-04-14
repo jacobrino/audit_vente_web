@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Audits{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="fa-solid fa-clock-rotate-left"></i> Audit des ventes</h2>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Type</th>
+                        <th>Client</th>
+                        <th>Produit</th>
+                        <th>Ancienne quantité</th>
+                        <th>Nouvelle quantité</th>
+                        <th>Utilisateur</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for audit in audits %}
+                        <tr>
+                            <td>{{ audit.type_operation }}</td>
+                            <td>{{ audit.nom_client }}</td>
+                            <td>{{ audit.design_produit }}</td>
+                            <td>{{ audit.qtesortie_ancien|default:"-" }}</td>
+                            <td>{{ audit.qtesortie_nouv|default:"-" }}</td>
+                            <td>
+                                {% if audit.utilisateur %}
+                                    {{ audit.utilisateur.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ audit.date_mise_a_jour|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucun audit trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if audits.has_other_pages %}
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if audits.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ audits.previous_page_number }}">Précédente</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Première</span></li>
+                        {% endif %}
+
+                        {% for num in audits.paginator.page_range %}
+                            {% if audits.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > audits.number|add:'-3' and num < audits.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if audits.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ audits.next_page_number }}">Suivante</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Dernière</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+
+        
+    </div>
+</div>
+{% endblock %}

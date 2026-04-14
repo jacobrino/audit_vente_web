@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Lien invalide{% endblock %}
+
+{% block content %}
+<div class="alert alert-danger text-center">
+    Le lien d'activation est invalide ou expiré.
+    <br><br>
+    <a href="{% url 'resend_activation' %}" class="btn btn-warning">
+        Renvoyer un nouveau lien
+    </a>
+</div>
+{% endblock %}

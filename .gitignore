@@ -1,0 +1,52 @@
+# Environnement virtuel
+venv/
+.env/
+.venv/
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Fichiers générés localement
+sent_emails/
+*.log
+
+# Migrations compilées
+**/migrations/__pycache__/
+
+# Fichiers d'éditeur / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# mypy / lint
+.mypy_cache/
+.ruff_cache/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
